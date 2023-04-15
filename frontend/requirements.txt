@@ -1,0 +1,5 @@
+markupsafe
+flask
+gunicorn
+pytz
+requests

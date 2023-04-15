@@ -1,0 +1,278 @@
+definitions:
+  v1.errorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  v1.getLinkByShortResponse:
+    properties:
+      all_redirect_times:
+        items:
+          type: string
+        type: array
+      dt_created_at:
+        type: string
+      long_url:
+        type: string
+      number_of_clicks:
+        type: integer
+      short_url:
+        type: string
+    type: object
+  v1.getLinkInfoResponse:
+    properties:
+      all_redirect_times:
+        items:
+          type: string
+        type: array
+      dt_created:
+        type: string
+      dt_will_delete:
+        type: string
+      long_url:
+        type: string
+      number_of_clicks:
+        type: integer
+      short_url:
+        type: string
+    type: object
+  v1.getUrlsListResponse:
+    properties:
+      items:
+        items:
+          type: string
+        type: array
+    type: object
+  v1.requestAuth:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  v1.requestMakeShorter:
+    properties:
+      time_to_live:
+        type: integer
+      time_to_live_unit:
+        type: string
+      token:
+        type: string
+      url:
+        type: string
+      vip_key:
+        type: string
+    type: object
+  v1.requestUser:
+    properties:
+      email:
+        type: string
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  v1.responseAuth:
+    properties:
+      token:
+        type: string
+    type: object
+  v1.responseMakeShorter:
+    properties:
+      secret_key:
+        type: string
+      short_url:
+        type: string
+    type: object
+  v1.responseRedirectToLong:
+    properties:
+      long_url:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Сервис, позволяющий укорачивать ссылки.
+  title: Shortener service
+  version: "1.0"
+paths:
+  /api/v1/admin/{secret_key}:
+    delete:
+      description: В строку запроса передаётся секретный ключ, по которому удаляется
+        ссылка.
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Удаляет ссылку.
+    get:
+      description: В строку запроса передаётся секретный ключ, по которому возвращается
+        информация о ссылке.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.getLinkInfoResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Возвращает информацию о ссылке.
+  /api/v1/auth:
+    post:
+      description: В формате json передаётся login и password. В ответ возвращается
+        токен.
+      parameters:
+      - description: make_shorter_request
+        in: body
+        name: auth_request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.requestAuth'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.responseAuth'
+        "400":
+          description: Возвращает "bad password" если пароль не валидный, "user not
+            found" если пользователь не найден, "wrong password" если пароль не совпадает
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Авторизует пользователя.
+  /api/v1/get_urls_list/{token}:
+    get:
+      description: В строку запроса передаётся токен, по которому возвращается массив.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.getUrlsListResponse'
+        "401":
+          description: Если токен не найден
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Возвращает массив секретных ключей.
+  /api/v1/make_shorter:
+    post:
+      description: В формате json передаётся url и опционально остальные параметры.
+        В ответ возвращаются секретный ключ и краткая ссылка. Если не передан vip_key,
+        то ссылка автоматически генерируется, а если передан, то vip_key и будет использоваться
+        как краткий ключ.
+      parameters:
+      - description: Я не разобрался как тут указать, что всё кроме url nullable,
+          поэтому напоминаю! И ещё, если всё-таки делаете vip-key, то обязательными
+          становятся все поля. time_to_live_unit может принимать значения SECONDS,
+          MINUTES, HOURS, DAYS
+        in: body
+        name: make_shorter_request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.requestMakeShorter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.responseMakeShorter'
+        "400":
+          description: Сообщения при различных ошибках валидации. Если передано пустое
+            поле url, то возвращается ошибка "url is empty". Если передано некорректное
+            значение time_to_live_unit или time_to_live <= 0, то возвращается ошибка
+            "time to live unit or time to live is invalid". Если vip_key уже сущетсвует
+            в базе данных, то возвращается ошибка "vip key is already in use".
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "401":
+          description: Если токен не найден
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Создаёт ссылку.
+  /api/v1/registration:
+    post:
+      description: В формате json передаётся login, email и password. В ответ возвращается
+        токен.
+      parameters:
+      - description: requestUser
+        in: body
+        name: registration_request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.requestUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.responseAuth'
+        "400":
+          description: Возвращается, если email не прошёл валидацию или пользователь
+            с таким login или email уже существует.
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Регистрирует пользователя.
+  /api/v1/url_info/{shortUrl}:
+    get:
+      description: В строку запроса передаётся краткая ссылка, по которой возвращается
+        информация о ссылке.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.getLinkByShortResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Возвращает информацию о публичной ссылке.
+  /redirect/{short_url}:
+    get:
+      description: В строку запроса передаётся краткая ссылка, по ней происходит перенаправление
+        на длинную ссылку.
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.responseRedirectToLong'
+        "404":
+          description: Not Found
+      summary: Перенаправляет пользователя по ссылке.
+swagger: "2.0"

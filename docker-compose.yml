@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: shortener-nasavasa-ru-api
+    depends_on:
+      - database
+    environment:
+      - CONNECTION_STRING=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+      - URL_PREFIX=${DOMAIN}
+    networks:
+      - database-api_net
+      - app-api_net
+  tg-bot:
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
+    container_name: shortener-nasavasa-ru-bot
+    depends_on:
+      - api
+    environment:
+      - DOMAIN=${DOMAIN}
+      - API_PATH=http://api:8080/
+      - BOT_TOKEN=${BOT_TOKEN}
+      - CONFIG_PATH=/app
+    deploy:
+      resources:
+        limits:
+          cpus: "0.05"
+    networks:
+      - app-api_net
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: shortener-nasavasa-ru-site
+    depends_on:
+      - api
+    hostname: shortener-nasavasa-ru
+    environment:
+      - DOMAIN=${DOMAIN}
+      - APIHOST=http://api:8080/
+    networks:
+      - app-api_net
+      - nginx_net
+  database:
+    image: postgres:14
+    container_name: shortener-nasavasa-ru-database
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - database-api_net
+networks:
+  database-api_net:
+    driver: bridge
+  app-api_net:
+    driver: bridge
+  nginx_net:
+    driver: bridge
+    external: true
+volumes:
+  db-data:

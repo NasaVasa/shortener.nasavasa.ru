@@ -1,0 +1,100 @@
+{
+  "Registration": {
+    "UpdateType": [
+      "Message"
+    ],
+    "KeyWords": [
+      "/reg",
+      "/register"
+    ],
+    "Path": "api/v1/registration"
+  },
+  "Authorisation": {
+    "UpdateType": [
+      "Message"
+    ],
+    "KeyWords": [
+      "/auth",
+      "/login"
+    ],
+    "Path": "api/v1/auth"
+  },
+  "Exit": {
+    "UpdateType": [
+      "Message"
+    ],
+    "KeyWords": [
+      "/exit"
+    ]
+  },
+  "GetUrlKeys": {
+    "UpdateType": [
+      "Message"
+    ],
+    "KeyWords": [
+      "/geturllist",
+      "/urls"
+    ],
+    "Path": "api/v1/get_urls_list/"
+  },
+  "CreateUrl": {
+    "UpdateType": [
+      "Message",
+      "CallbackQuery"
+    ],
+    "KeyWords": [
+      "/createUrl",
+      "/create"
+    ],
+    "Path": "api/v1/make_shorter",
+    "Regex": {
+      "WithProtocol": "^(https?:\\/\\/)?([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*$",
+      "WithoutProtocol": "^([\\w-]{1,32}\\.[\\w-]{1,32})[^\\s@]*$"
+    }
+  },
+  "InfoUrl": {
+    "UpdateType": [
+      "Message",
+      "CallbackQuery"
+    ],
+    "KeyWords": [
+      "/infoUrl",
+      "/info"
+    ],
+    "Path": "api/v1/admin/"
+  },
+  "DeleteUrl": {
+    "UpdateType": [
+      "Message",
+      "CallbackQuery"
+    ],
+    "KeyWords": [
+      "/deleteUrl",
+      "/delete"
+    ],
+    "Path": "api/v1/admin/"
+  },
+  "Help": {
+    "UpdateType": [
+      "Message",
+      "CallbackQuery"
+    ],
+    "KeyWords": [
+      "/help",
+      "/help@hse_shortener_bot"
+    ],
+    "Answer": "<b>Доступные команды:</b>\n\n• /register - <i>зарегистрировать новый аккаунт</i>\n• /login - <i>войти в аккаунт</i>\n• /urls - <i>получить список своих ссылок</i>\n• /createUrl - <i>укоротить ссылку</i>\n• /infoUrl - <i>получить информацию о созданной ссылке</i>\n• /deleteUrl - <i>удалить ссылку</i>\n• /exit - <i>выйти из аккаунта</i>\n• /help - <i>вывести это сообщение</i>"
+  },
+  "Start": {
+    "UpdateType": [
+      "Message",
+      "CallbackQuery"
+    ],
+    "KeyWords": [
+      "/start"
+    ],
+    
+    "Answer": "<b>Рады приветствовать</b>\n<b>Доступные команды:</b>\n\n• /register - <i>зарегистрировать новый аккаунт</i>\n• /login - <i>войти в аккаунт</i>\n• /urls - <i>получить список своих ссылок</i>\n• /createUrl - <i>укоротить ссылку</i>\n• /infoUrl - <i>получить информацию о созданной ссылке</i>\n• /deleteUrl - <i>удалить ссылку</i>\n• /exit - <i>выйти из аккаунта</i>\n• /help - <i>вывести это сообщение</i>"
+  },
+  "AdminChatID": 480794294
+}

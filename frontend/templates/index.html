@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        {% if error %}
+            <div class="notification is-danger">
+                {{ error }}
+            </div>
+        {% endif %}
+        <section class="section">
+            <h1 class="title">Make short link</h1>
+            <form class="box" action="/" method="POST">
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" name="url" placeholder="Url">
+                    </div>
+                </div>
+                <button class="button is-primary">Make short</button>
+            </form>
+            {% if url_data %}
+                <div class=" box">
+                    <p>
+                        <strong>Short url:</strong> <a href="{{ url_data.short_url }}">{{ url_data.short_url }}</a>
+                    </p>
+                    <p>
+                        <strong>Full url:</strong> <a href="{{ url_data.long_url }}">{{ url_data.long_url }}</a>
+                    </p>
+                    <p>
+                        <strong>Used {{ url_data.number_of_clicks }} times</strong>
+                    </p>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        {% if error %}
+            <div class="notification is-danger">
+                {{ error }}
+            </div>
+        {% endif %}
+        <section class="section">
+            <h1 class="title">Make custom short link</h1>
+            <form class="box" action="/make_url" method="POST">
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" name="url" placeholder="Url">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" name="short-url" placeholder="Short url">
+                    </div>
+                </div>
+                <div class="field has-addons">
+                    <p class="control">
+                        <span class="select">
+                          <select name="units">
+                            <option>HOURS</option>
+                            <option>SECONDS</option>
+                            <option>MINUTES</option>
+                            <option>DAYS</option>
+                          </select>
+                        </span>
+                    </p>
+                    <p class="control">
+                        <input class="input" type="number" name="ttl" placeholder="Time to live" value="24">
+                    </p>
+                </div>
+                <button class="button is-primary">Make short</button>
+            </form>
+        </section>
+
+        <section class="section">
+            <h1 class="title">Your links</h1>
+            {% if not links %}
+                <div class="box">
+                    Your links list is empty
+                </div>
+            {% endif %}
+            {% for secret, link in links %}
+                <div class="box">
+                    <form method="POST" action="/del_url" style="float: right;">
+                        <button class="delete is-large" name="del"
+                                value="{{ secret }}"></button>
+                    </form>
+                    <p>
+                        <strong>Short url:</strong> <a href="{{ link.short_url }}">{{ link.short_url }}</a>
+                    </p>
+                    <p>
+                        <strong>Full url:</strong> <a href="{{ link.long_url }}">{{ link.long_url }}</a>
+                    </p>
+                    <p>
+                        <strong>Created at:</strong> {{ link.dt_created | datetimefilter }}
+                    </p>
+                    <p>
+                        <strong>Active until:</strong> {{ link.dt_will_delete | datetimefilter }}
+                    </p>
+                    <p>
+                        <strong>Used {{ link.number_of_clicks }} times</strong>
+                    </p>
+                </div>
+            {% endfor %}
+        </section>
+    </div>
+{% endblock %}
