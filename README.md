@@ -23,7 +23,7 @@ docker-compose up -d
 ```
 P.S. Так как в проекте используется docker, то для запуска проекта необходимо установить docker и docker-compose
 
-P.P.S. Так как в docker-compose Flask подключается к уже созданной сети nginx-net, то необходимо создать контейнер с nginx, который будет проксировать запросы на Laravel.
+P.P.S. Так как в docker-compose Flask подключается к уже созданной сети nginx-net, то необходимо создать контейнер с nginx, который будет проксировать запросы на Flask.
 
 ## Screenshots
 
